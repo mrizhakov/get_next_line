@@ -5,7 +5,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-# define BUFFER_SIZE 7
+# define BUFFER_SIZE 1
 
 char *ft_strchr(const char *s, int c);
 int	ft_strlen(const char *str);

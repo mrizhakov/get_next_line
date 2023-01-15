@@ -72,6 +72,7 @@ char *append_to_storage(int fd, char *storage, int *new_lines_read, int *end_of_
     printf("strjoin failed \n");
   storage = ft_strjoin(storage, buf);
 	free(buf);
+  
   return (storage);
 }
 
@@ -146,6 +147,8 @@ int main(void)
   printf("%s", read_bytes);
   read_bytes = get_next_line(file_d);
   printf("%s", read_bytes);
+
+  free(read_bytes);    
   
   return 0;
 }
