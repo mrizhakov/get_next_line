@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include "get_next_line.h"
 
-# define BUFFER_SIZE 100
     
 char *return_new_line(char *storage, int *lines_returned) 
 {
@@ -93,20 +92,47 @@ char *get_next_line(int fd)
   }
   
 
-  while ((end_of_file < 1) || (new_lines_read != lines_returned))
+  while ((end_of_file < 1) ) //|| (new_lines_read != lines_returned)
     {
-  while (new_lines_read <= lines_returned)
+  	while ((new_lines_read <= lines_returned) && (end_of_file < 1))
+		{
+      printf("external Loop before reading file -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
       storage = append_to_storage(fd, storage, &new_lines_read, &end_of_file);
-      //printf("Loop -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
-      //printf("Storage contains |%s| \n", storage);
-  if (new_lines_read > lines_returned)
+	  
+      printf("Loop -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
+      // issue when buffer is 1, 
+      printf("Stuck in external loop?\n");
+      printf("Storage contains |%s| \n", storage);
+	  while ((end_of_file >= 1) && (new_lines_read >= lines_returned))
+  		{
+			new_string = return_new_line(storage, &lines_returned);
+    		printf("Internal loop -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
+    		printf("Stuck in ENDOFILE loop?\n");
+    		printf("Storage contains |%s| \n", storage);
+    		printf("Lines_returned is |%d|\n", lines_returned);
+    		return (new_string);  
+  		}
+		}
+	
+  if ((new_lines_read > lines_returned) && (end_of_file < 1))
         {
           new_string = return_new_line(storage, &lines_returned);
-          //printf("Lines_returned is |%d|\n", lines_returned);
+          printf("Internal loop -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
+          printf("Stuck in internal loop?\n");
+          printf("Storage contains |%s| \n", storage);
+          printf("Lines_returned is |%d|\n", lines_returned);
           return (new_string);
         }       
       }
-  if (end_of_file == 1)
+  while ((end_of_file >= 1) && (new_lines_read > lines_returned))
+  {
+	new_string = return_new_line(storage, &lines_returned);
+    printf("Internal loop -> New_lines_read is |%d|, Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
+    printf("Stuck in ENDOFILE loop?\n");
+    printf("Storage contains |%s| \n", storage);
+    printf("Lines_returned is |%d|\n", lines_returned);
+    return (new_string);  
+  }
     new_string = NULL;
   return (new_string); 
 }
@@ -118,35 +144,30 @@ int main(void)
   char *read_bytes;
  
   read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
+  printf("New string is : %s\n", read_bytes);
   read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
-  read_bytes = get_next_line(file_d);
-  printf("%s", read_bytes);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+    read_bytes = get_next_line(file_d);
+  printf("New string is : %s\n", read_bytes);
+  
 
   free(read_bytes);    
   
