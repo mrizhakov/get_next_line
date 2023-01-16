@@ -40,11 +40,12 @@ char *return_new_line(char *storage, int *lines_returned) {
     return (NULL);
 }
 
-char *append_to_storage(int fd, char *storage, int *new_lines_read, int *end_of_file) 
+char *append_to_storage(int fd, char **storage, int *new_lines_read, int *end_of_file) 
 {
   size_t  line_len;
   int     i;
   char    *buf;
+  char    *temp;
 
   buf = malloc((BUFFER_SIZE + 1) * sizeof(char));
   if (!buf)
@@ -54,7 +55,7 @@ char *append_to_storage(int fd, char *storage, int *new_lines_read, int *end_of_
   i = 0;
   line_len = read(fd, buf, BUFFER_SIZE);
   if (line_len == -1) {
-    free(storage);
+    free(*storage);
     free(buf);
     return NULL;
   }
@@ -75,11 +76,13 @@ char *append_to_storage(int fd, char *storage, int *new_lines_read, int *end_of_
   }
   // snippet of code to return NULL in case we reached \0 (the end of the file)
   buf[line_len] = '\0';
-  if (!ft_strjoin(storage, buf))
+  if (!ft_strjoin(*storage, buf))
     printf("strjoin failed \n");
-  storage = ft_strjoin(storage, buf);
+  temp = ft_strjoin(*storage, buf);
+  free(*storage);
+    *storage = temp;
   free(buf);
-  return (storage);
+  return (NULL);
 }
 
 char *get_next_line(int fd) 
@@ -94,8 +97,8 @@ char *get_next_line(int fd)
   if (!storage) 
   {
     storage = malloc(sizeof(char));
-    storage[0] = '\0';
-    storage = append_to_storage(fd, storage, &new_lines_read, &end_of_file);
+    storage[0] = "\0";
+    append_to_storage(fd, &storage, &new_lines_read, &end_of_file);
     // printf("First run - > New_lines_read is |%d|, Lines_returned is |%d|,
     // end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
   }
@@ -106,7 +109,7 @@ char *get_next_line(int fd)
       // printf("external Loop before reading file -> New_lines_read is |%d|,
       // Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read,
       // lines_returned, end_of_file);
-      storage = append_to_storage(fd, storage, &new_lines_read, &end_of_file);
+      append_to_storage(fd, &storage, &new_lines_read, &end_of_file);
 
       // printf("Loop -> New_lines_read is |%d|, Lines_returned is |%d|,
       // end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
@@ -120,6 +123,7 @@ char *get_next_line(int fd)
         // end_of_file); printf("Stuck in ENDOFILE loop?\n"); printf("Storage
         // contains |%s| \n", storage); printf("Lines_returned is |%d|\n",
         // lines_returned);
+        free(storage);
         return (new_string);
       }
     }
@@ -131,6 +135,7 @@ char *get_next_line(int fd)
       // end_of_file); printf("Stuck in internal loop?\n"); printf("Storage
       // contains |%s| \n", storage); printf("Lines_returned is |%d|\n",
       // lines_returned);
+      free(storage);
       return (new_string);
     }
   }
@@ -141,10 +146,11 @@ char *get_next_line(int fd)
     // printf("Stuck in ENDOFILE loop?\n");
     // printf("Storage contains |%s| \n", storage);
     // printf("Lines_returned is |%d|\n", lines_returned);
+    
     return (new_string);
   }
   new_string = NULL;
-  //free(storage);
+  free(storage);
   return (new_string);
 }
 
