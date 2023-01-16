@@ -54,17 +54,17 @@ char *append_to_storage(int fd, char **storage, int *new_lines_read, int *end_of
 
   i = 0;
   line_len = read(fd, buf, BUFFER_SIZE);
-  if (line_len == -1) {
+  if ((int)line_len == -1) {
     free(*storage);
     free(buf);
     return NULL;
   }
 
-  if (line_len != BUFFER_SIZE)
+  if ((int)line_len != BUFFER_SIZE)
     (*end_of_file)++;
   // printf("Buf length is |%d|, line_len is |%d| \n", ft_strlen(buf),
   // line_len);
-  while (i != line_len) 
+  while (i != (int)line_len) 
   {
     if (buf[i] == '\n' || line_len != BUFFER_SIZE) //(buf[i] == '\n' || buf[i] == '\0')
     {
@@ -75,20 +75,26 @@ char *append_to_storage(int fd, char **storage, int *new_lines_read, int *end_of
     i++;
   }
   // snippet of code to return NULL in case we reached \0 (the end of the file)
-  buf[line_len] = '\0';
+  buf[(int)line_len] = '\0';
+  /*
   if (!ft_strjoin(*storage, buf))
+  {
+  free(*storage);
+  free(buf);
     printf("strjoin failed \n");
+  }
+  */
   temp = ft_strjoin(*storage, buf);
   free(*storage);
     *storage = temp;
+  //free(temp);
   free(buf);
   return (NULL);
 }
 
 char *get_next_line(int fd) 
 {
-  static char *storage;
-	
+  static char *storage;	
   static int lines_returned;
   static int new_lines_read;
   static int end_of_file;
@@ -97,7 +103,7 @@ char *get_next_line(int fd)
   if (!storage) 
   {
     storage = malloc(sizeof(char));
-    storage[0] = "\0";
+    storage[0] = '\0';
     append_to_storage(fd, &storage, &new_lines_read, &end_of_file);
     // printf("First run - > New_lines_read is |%d|, Lines_returned is |%d|,
     // end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
@@ -110,7 +116,7 @@ char *get_next_line(int fd)
       // Lines_returned is |%d|, end_of_file is |%d| \n", new_lines_read,
       // lines_returned, end_of_file);
       append_to_storage(fd, &storage, &new_lines_read, &end_of_file);
-
+	free(storage);
       // printf("Loop -> New_lines_read is |%d|, Lines_returned is |%d|,
       // end_of_file is |%d| \n", new_lines_read, lines_returned, end_of_file);
       // issue when buffer is 1,
